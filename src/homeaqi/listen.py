@@ -63,7 +63,7 @@ def listen_loop():
             _logger.info("Unable to read from sensor, retrying...")
             continue
 
-        _logger.info()
+        _logger.info("\n")
         _logger.info("Concentration Units (standard)")
         _logger.info("---------------------------------------")
         _logger.info(
