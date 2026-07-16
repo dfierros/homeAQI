@@ -63,30 +63,26 @@ def parse_args(args):
     parser.add_argument(
         "-v",
         "--verbose",
-        dest="loglevel",
-        help="set loglevel to INFO",
-        action="store_const",
-        const=logging.INFO,
-    )
-    parser.add_argument(
-        "-vv",
-        "--very-verbose",
-        dest="loglevel",
+        dest="verbose",
         help="set loglevel to DEBUG",
-        action="store_const",
-        const=logging.DEBUG,
+        action="store_true",
     )
     return parser.parse_args(args)
 
 
-def setup_logging(loglevel):
+def setup_logging(verbose: bool):
     """Setup basic logging
 
     Args:
       loglevel (int): minimum loglevel for emitting messages
     """
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
+    logging.basicConfig(
+        level=logging.DEBUG if verbose else logging.INFO,
+        stream=sys.stdout,
+        format=logformat,
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
 
 def main(args):
@@ -100,7 +96,7 @@ def main(args):
           (for example  ``["--verbose", "42"]``).
     """
     args = parse_args(args)
-    setup_logging(args.loglevel)
+    setup_logging(args.verbose)
 
     if args.command == "listen":
         _logger.info("Entering listening loop...")
