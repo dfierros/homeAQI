@@ -12,6 +12,8 @@ import board
 import busio
 from adafruit_pm25.i2c import PM25_I2C
 
+from homeaqi.resources.aqi_dataclasses import AQData
+
 # from digitalio import DigitalInOut, Direction, Pull
 
 _logger = logging.getLogger(__name__)
@@ -57,34 +59,10 @@ def listen_loop():
         time.sleep(1)
 
         try:
-            aqdata = pm25.read()
-            # _logger.info(aqdata)
+            raw_aqdata = pm25.read()
         except RuntimeError:
             _logger.info("Unable to read from sensor, retrying...")
             continue
 
-        _logger.info("\n")
-        _logger.info("Concentration Units (standard)")
-        _logger.info("---------------------------------------")
-        _logger.info(
-            "PM 1.0: %d\tPM2.5: %d\tPM10: %d"
-            % (
-                aqdata["pm10 standard"],
-                aqdata["pm25 standard"],
-                aqdata["pm100 standard"],
-            )
-        )
-        _logger.info("Concentration Units (environmental)")
-        _logger.info("---------------------------------------")
-        _logger.info(
-            "PM 1.0: %d\tPM2.5: %d\tPM10: %d"
-            % (aqdata["pm10 env"], aqdata["pm25 env"], aqdata["pm100 env"])
-        )
-        _logger.info("---------------------------------------")
-        _logger.info("Particles > 0.3um / 0.1L air: %s", aqdata["particles 03um"])
-        _logger.info("Particles > 0.5um / 0.1L air: %s", aqdata["particles 05um"])
-        _logger.info("Particles > 1.0um / 0.1L air: %s", aqdata["particles 10um"])
-        _logger.info("Particles > 2.5um / 0.1L air: %s", aqdata["particles 25um"])
-        _logger.info("Particles > 5.0um / 0.1L air: %s", aqdata["particles 50um"])
-        _logger.info("Particles > 10 um / 0.1L air: %s", aqdata["particles 100um"])
-        _logger.info("---------------------------------------")
+        aqdata = AQData.from_dict(raw_aqdata)
+        _logger.info("\n%s", aqdata)
