@@ -134,6 +134,25 @@ def run(
     elapsed_minutes = 0
     previous_minute = 0
 
+    _logger.info("Sampling AQI...")
+    aqi_reading = sample_aq_sensor(pm25_sensor)
+    aqi_value, aqi_category = calculate_aqi(aqi_reading)
+    _logger.info("AQI: %s", aqi_value)
+    _logger.info("Category: %s", aqi_category)
+
+    _logger.info("Publishing to Adafruit IO...")
+    try:
+        publish_data(
+            io_client,
+            feeds,
+            aqi_value,
+            aqi_category,
+            location_metadata,
+        )
+        _logger.info("Published successfully")
+    except (ValueError, RuntimeError, ConnectionError, OSError) as exc:
+        _logger.warning("Failed to send data to Adafruit IO: %s", exc)
+
     while True:
         try:
             _logger.debug("Fetching time from Adafruit IO...")
