@@ -119,8 +119,8 @@ def publish_data(
     if aqi_category is None:
         raise ValueError("AQI category is required for publishing")
     _logger.debug("Sending data to Adafruit IO: AQI=%s, Category=%s", aqi_value, aqi_category)
-    aio.send_data(feeds["aqi"].key, str(aqi_value), location_metadata)
-    aio.send_data(feeds["category"].key, aqi_category, location_metadata)
+    aio.send_data(feeds["aqi"].key, str(aqi_value))
+    aio.send_data(feeds["category"].key, aqi_category)
 
 def run(
     publish_interval: int = PUBLISH_INTERVAL,
