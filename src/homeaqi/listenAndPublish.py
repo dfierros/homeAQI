@@ -100,7 +100,7 @@ def create_feeds(aio: Client) -> Dict[str, object]:
     """Create and return Adafruit IO feed objects used by this module."""
     _logger.debug("Obtaining user's feeds...")
     feeds = aio.feeds()
-    _logger.debug('Feeds: ', feeds)
+    _logger.debug('Feeds: %s', feeds)
     return {
         "aqi": aio.feeds("air-quality-sensor.aqi"),
         "category": aio.feeds("air-quality-sensor.category"),
