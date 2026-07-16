@@ -124,6 +124,25 @@ def publish_data(
     aio.send_data(feeds["category"].key, aqi_category)
     aio.send_data(feeds["location"].key, 42, metadata=aqi_location)  # 42 is a placeholder value for location feed
 
+
+def sample_and_publish_aqi(
+    pm25_sensor: PM25_I2C,
+    aio: Client,
+    feeds: Dict[str, object],
+    aqi_location: Dict[str, Optional[float]],
+) -> None:
+    """Sample AQI from the sensor and publish it to Adafruit IO."""
+    _logger.info("Sampling AQI...")
+    aqi_reading = sample_aq_sensor(pm25_sensor)
+    aqi_value, aqi_category = calculate_aqi(aqi_reading)
+    _logger.info("AQI: %s", aqi_value)
+    _logger.info("Category: %s", aqi_category)
+
+    _logger.info("Publishing to Adafruit IO...")
+    publish_data(aio, feeds, aqi_value, aqi_category, aqi_location)
+    _logger.info("Published successfully")
+
+
 def run(
     publish_interval: int = PUBLISH_INTERVAL,
     reset_pin_value=None,
@@ -137,22 +156,8 @@ def run(
     elapsed_minutes = 0
     previous_minute = 0
 
-    _logger.info("Sampling AQI...")
-    aqi_reading = sample_aq_sensor(pm25_sensor)
-    aqi_value, aqi_category = calculate_aqi(aqi_reading)
-    _logger.info("AQI: %s", aqi_value)
-    _logger.info("Category: %s", aqi_category)
-
-    _logger.info("Publishing to Adafruit IO...")
     try:
-        publish_data(
-            io_client,
-            feeds,
-            aqi_value,
-            aqi_category,
-            location_metadata,
-        )
-        _logger.info("Published successfully")
+        sample_and_publish_aqi(pm25_sensor, io_client, feeds, location_metadata)
     except (ValueError, RuntimeError, ConnectionError, OSError) as exc:
         _logger.warning("Failed to send data to Adafruit IO: %s", exc)
 
@@ -174,22 +179,8 @@ def run(
             elapsed_minutes += 1
 
         if elapsed_minutes >= publish_interval:
-            _logger.info("Sampling AQI...")
-            aqi_reading = sample_aq_sensor(pm25_sensor)
-            aqi_value, aqi_category = calculate_aqi(aqi_reading)
-            _logger.info("AQI: %s", aqi_value)
-            _logger.info("Category: %s", aqi_category)
-
-            _logger.info("Publishing to Adafruit IO...")
             try:
-                publish_data(
-                    io_client,
-                    feeds,
-                    aqi_value,
-                    aqi_category,
-                    location_metadata,
-                )
-                _logger.info("Published successfully")
+                sample_and_publish_aqi(pm25_sensor, io_client, feeds, location_metadata)
             except (ValueError, RuntimeError, ConnectionError, OSError) as exc:
                 _logger.warning("Failed to send data to Adafruit IO, reconnecting: %s", exc)
                 time.sleep(1)
