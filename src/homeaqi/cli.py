@@ -51,6 +51,11 @@ def parse_args(args):
     """
     parser = argparse.ArgumentParser(description="AQI Sensor Interface")
     parser.add_argument(
+        "command",
+        action="store",
+        choices=["listen", "listen_and_publish"],
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"homeAQI {__version__}",
@@ -81,9 +86,7 @@ def setup_logging(loglevel):
       loglevel (int): minimum loglevel for emitting messages
     """
     logformat = "[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
-    logging.basicConfig(
-        level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S"
-    )
+    logging.basicConfig(level=loglevel, stream=sys.stdout, format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
 
 
 def main(args):
@@ -99,8 +102,13 @@ def main(args):
     args = parse_args(args)
     setup_logging(args.loglevel)
 
-    _logger.info("Entering listening loop...")
-    listen.listen_loop()
+    if args.command == "listen":
+        _logger.info("Entering listening loop...")
+        listen.listen_loop()
+    elif args.command == "listen_and_publish":
+        _logger.info("Entering listen and publish loop...")
+    else:
+        raise ValueError("Unsupported command")
 
     _logger.info("Script ends here")
 
