@@ -86,6 +86,7 @@ def build_location_metadata() -> Dict[str, Optional[float]]:
         "lat": secrets["latitude"],
         "lon": secrets["longitude"],
         "ele": secrets["elevation"],
+        "created_at": time.time()
     }
 
 
