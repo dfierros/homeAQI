@@ -1,0 +1,16 @@
+[Unit]
+Description=homeAQI listen and publish service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env cli listen_and_publish
+Restart=on-failure
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+StandardOutput=journal
+StandardError=inherit
+SyslogIdentifier=homeaqi-listen-and-publish
+
+[Install]
+WantedBy=multi-user.target
