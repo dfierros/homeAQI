@@ -86,7 +86,7 @@ def build_location_metadata() -> Dict[str, Optional[float]]:
         "lat": secrets["latitude"],
         "lon": secrets["longitude"],
         "ele": secrets["elevation"],
-        "created_at": time.time()
+        "created_at": None
     }
 
 
@@ -105,6 +105,7 @@ def create_feeds(aio: Client) -> Dict[str, object]:
     return {
         "aqi": aio.feeds("air-quality-sensor.aqi"),
         "category": aio.feeds("air-quality-sensor.category"),
+        "location": aio.feeds("air-quality-sensor.location"),
     }
 
 
@@ -113,7 +114,7 @@ def publish_data(
     feeds: Dict[str, object],
     aqi_value: int,
     aqi_category: Optional[str],
-    location_metadata: Dict[str, Optional[float]],
+    aqi_location: Dict[str, Optional[float]],
 ) -> None:
     """Publish AQI and category to Adafruit IO."""
     if aqi_category is None:
@@ -121,6 +122,7 @@ def publish_data(
     _logger.debug("Sending data to Adafruit IO: AQI=%s, Category=%s", aqi_value, aqi_category)
     aio.send_data(feeds["aqi"].key, str(aqi_value))
     aio.send_data(feeds["category"].key, aqi_category)
+    aio.send_data(feeds["location"].key, 42, metadata=aqi_location)  # 42 is a placeholder value for location feed
 
 def run(
     publish_interval: int = PUBLISH_INTERVAL,
