@@ -56,3 +56,4 @@ venv/
 
 # Individual configuration files
 config/*
+.env
