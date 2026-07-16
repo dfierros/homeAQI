@@ -18,7 +18,7 @@ from .resources.aqi_categories import AQISensorBreakpoints
 _logger = logging.getLogger(__name__)
 
 # Interval the sensor publishes to Adafruit IO, in minutes
-PUBLISH_INTERVAL = 10
+PUBLISH_INTERVAL = 5
 reset_pin = None
 
 
