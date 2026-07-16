@@ -24,7 +24,7 @@ import argparse
 import logging
 import sys
 
-from . import __version__, listen
+from . import __version__, listen, listen_and_publish
 
 __author__ = "Diego Fierros"
 __copyright__ = "Diego Fierros"
@@ -103,6 +103,7 @@ def main(args):
         listen.listen_loop()
     elif args.command == "listen_and_publish":
         _logger.info("Entering listen and publish loop...")
+        listen_and_publish.run()
     else:
         raise ValueError("Unsupported command")
 
